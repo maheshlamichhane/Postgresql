@@ -63,10 +63,10 @@ CREATE TABLE t_tags(
 -- Insert some sample data
 INSERT INTO t_tags (tag) VALUES ('Pen'),('Pencil');
 
--- Lets insert a record, o9n conflict do nothing
+-- Lets insert a record, on conflict do nothing
 INSERT INTO t_tags (tag) VALUES ('Pen') ON CONFLICT (tag) DO NOTHING;
 INSERT INTO t_tags (tag) VALUES ('Pen')
-ON CONFLICT (tag) DO UPDATE SET tag = tag;
+ON CONFLICT (tag) DO UPDATE SET tag = EXCLUDED.tag,update_date = NOW();
 
 SELECT * from t_tags;
 
