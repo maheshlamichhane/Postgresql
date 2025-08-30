@@ -41,6 +41,44 @@ SELECT * FROM movies ORDER BY release_date DESC,movie_name DESC;
 -- Column and order by as alias 
 SELECT first_name,last_name AS surname FROM actors ORDER BY surname;
 
+-- Calculate the length of the actor name
+SELECT first_name,LENGTH(first_name) AS len FROM actors;
+
+-- Sort rows by length of the actor name in desc
+SELECT first_name,LENGTH(first_name) AS len FROM actors ORDER BY len DESC;
+
+--  Sort all records by first_name asc, date_of_birth descending
+SELECT * FROM actors ORDER BY first_name ASC,date_of_birth DESC;
+
+-- Use column number instead of column name for sorting 
+SELECT first_name,last_name,date_of_birth FROM actors ORDER BY 1 ASC,2 DESC;
+
+
+-- Using order by with NULL values
+CREATE TABLE demo_sorting(
+	num INT
+);
+INSERT INTO demo_sorting(num) VALUES (1),(2),(3),(NULL);
+SELECT * from demo_sorting;
+SELECT * from demo_sorting ORDER By num ASC;
+SELECT * FROM demo_sorting ORDER BY num NULLS FIRST;
+SELECT * from demo_sorting ORDER By num DESC;
+SELECT * from demo_sorting ORDER By num DESC NULLS LAST;
+DROP table demo_sorting;
+
+-- Select distinct data from column
+SELECT DISTINCT movie_lang FROM movies ORDER BY 1;
+SELECT DISTINCT movie_lang,director_id FROM movies ORDER By 1;
+SELECT DISTINCT * FROM movies;
+
+
+
+
+
+
+
+
+
 
 
 
