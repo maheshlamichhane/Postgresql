@@ -1,0 +1,173 @@
+-- DATE/TIME/TIMESTAMPS Data types
+-- System Month Date Settings
+
+-- To view current setting for date style
+SHOW DateStyle;
+
+-- To change date style you can use 
+SET DateStyle = 'ISO,DMY';
+
+-- To reset back to default style
+SET DateStyle = "ISO, MDY";
+
+-- Using TO_DATE function
+SELECT TO_DATE('2025-11-08','YYYY-MM-DD');
+SELECT TO_DATE('20251108','YYYYMMDD');
+SELECT TO_DATE('08-11-2024','DD-MM-YYYY');
+SELECT TO_DATE('December 1, 2020','Month DD, YYYY');
+SELECT TO_DATE('Dec 1, 2020','Mon DD, YYYY');
+SELECT TO_DATE('8th Dec, 2020', 'DDth Mon, YYYY');
+
+-- Using TO_TIMESTAMP function
+SELECT TO_TIMESTAMP('2020-02-02 10:30:20','YYYY-MM-DD HH:MI:SS');
+SELECT TO_TIMESTAMP('2020-02-02 10:30:20','YYYY-MM-DD HH:MI');
+SELECT TO_TIMESTAMP('2020-02-02 10:30:20','YYYY-MM-DD HH');
+SELECT TO_TIMESTAMP('2020-02-02 20:30:20','YYYY-MM-DD HH24:MI:SS');
+SELECT TO_TIMESTAMP('2020-02-02 10:4','YYYY-MM-DD SS:MS');
+
+-- Formating dates
+SELECT CURRENT_TIMESTAMP;
+SELECT CURRENT_TIMESTAMP,TO_CHAR('2020-01-01 10:00:00'::TIMESTAMP,
+'YYYY Month DD');
+SELECT CURRENT_TIMESTAMP,
+TO_CHAR('2020-01-01 10:00:00'::TIMESTAMP,'YYYY Month DD'),
+TO_CHAR('2020-01-01 10:00:00'::TIMESTAMPTZ,'YYYY Month DD');
+
+-- Date construction functions
+SELECT MAKE_DATE(2020,01,01);
+SELECT MAKE_TIME(2,3,4.05);
+SELECT MAKE_TIMESTAMP(2020,1,1,10,30,45);
+SELECT MAKE_INTERVAL(2020,01,01,01,10,30,45);
+SELECT MAKE_INTERVAL(days => 10);
+SELECT MAKE_INTERVAL(months => 10, days => 2,mins => 35);
+SELECT MAKE_INTERVAL(weeks => 2);
+SELECT MAKE_TIMESTAMPTZ(2020,02,15,10,35,15.35);
+
+-- Date value extractor
+SELECT
+	EXTRACT('DAY' FROM CURRENT_TIMESTAMP) as "Day",
+	EXTRACT('MONTH' FROM CURRENT_TIMESTAMP) as "Month",
+	EXTRACT('YEAR' FROM CURRENT_TIMESTAMP) as "Year";
+SELECT EXTRACT('EPOCH' FROM CURRENT_TIMESTAMP);
+SELECT EXTRACT('CENTURY' FROM INTERVAL '500 YEARS 2 MONTHS 11 DAYS');
+
+-- Adding/Subtraction with dates
+SELECT DATE '20200101'+10;
+SELECT DATE '20200101'::date+10;
+
+-- Using with INVERVAL
+SELECT TIME '23:58:58' + INTERVAL '1 SECOND';
+SELECT TIME '23:58:58' + INTERVAL '2 SECOND';
+SELECT CURRENT_TIMESTAMP + '01:01:01';
+SELECT DATE '20200101' + TIME '10:25:10';
+SELECT  '10:10:10' + TIME '10:25:10';
+SELECT INTERVAL '30 MINUTES' + INTERVAL '30 MINUTES';
+
+
+-- Overlap function
+SELECT (DATE '2020-01-01', DATE '2020-12-31') 
+OVERLAPS (DATE '2021-10-12',DATE '2021-12-01');
+SELECT (DATE '2020-01-01',INTERVAL '500 DAYS') 
+OVERLAPS (DATE '2020-05-12',DATE '2020-12-01');
+
+-- Date/Times function
+SELECT CURRENT_DATE;
+SELECT CURRENT_DATE,CURRENT_TIME;
+SELECT CURRENT_DATE,CURRENT_TIME,CURRENT_TIMESTAMP;
+SELECT CURRENT_DATE,CURRENT_TIME,CURRENT_TIMESTAMP,LOCALTIME;
+SELECT CURRENT_DATE,CURRENT_TIME,CURRENT_TIMESTAMP,LOCALTIME,LOCALTIMESTAMP;
+
+-- PostgreSQL date/time functions
+SELECT NOW();
+SELECT NOW(),TRANSACTION_TIMESTAMP();
+SELECT NOW(),TRANSACTION_TIMESTAMP(),STATEMENT_TIMESTAMP();
+SELECT NOW(),TRANSACTION_TIMESTAMP(),STATEMENT_TIMESTAMP(),CLOCK_TIMESTAMP();;
+SELECT TIMEOFDAY();
+
+-- AGE function
+SELECT age('2020-01-01','2018-10-01');
+SELECT age( timestamp '2018-08-01');
+SELECT age(CURRENT_DATE, TIMESTAMP '2020-01-01');
+
+-- Current date function
+SELECT CURRENT_DATE;
+SELECT CURRENT_DATE - 1;
+
+-- Current time function
+SELECT CURRENT_TIME;
+CREATE TABLE logs(
+	log_id SERIAL PRIMARY KEY,
+	add_date DATE DEFAULT CURRENT_DATE,
+	add_time TIME DEFAULT CURRENT_TIME
+);
+INSERT INTO logs(log_id) values ('1');
+SELECT * FROM logs;
+
+-- Date accuracy with EPOCH
+SELECT AGE(TIMESTAMP '2020-12-20',TIMESTAMP '2020-10-20');
+SELECT
+	EXTRACT(EPOCH FROM TIMESTAMPTZ '2020-12-20') - 
+	EXTRACT(EPOCH FROM TIMESTAMPTZ '2020-10-20')
+	AS "Difference in seconds";
+
+-- View and set timezones
+SELECT * FROM pg_timezone_names;
+SELECT * FROM pg_timezone_abbrevs;
+SHOW TIME ZONE;
+SET TIME ZONE 'US/Alaska';
+SET TIME ZONE 'Asia/Katmandu';
+
+-- date_part function
+SELECT date_part('year', TIMESTAMP '2017-01-01');
+SELECT
+	date_part('year', TIMESTAMP '2017-01-01') AS "year",
+	date_part('quarter', TIMESTAMP '2017-01-01') AS "quarter",
+	date_part('month', TIMESTAMP '2017-01-01') AS "month", 
+	date_part('decade', TIMESTAMP '2017-01-01') AS "decade",
+	date_part('century', TIMESTAMP '2017-01-01') AS "century"
+;
+
+SELECT
+	date_part('week', TIMESTAMP '2017-01-01') AS "week",
+	date_part('dow', TIMESTAMP '2017-01-05') AS "dow",
+	date_part('doy', TIMESTAMP '2017-01-01') AS "doy",
+	date_part('day', TIMESTAMP '2017-01-01') AS "day",
+	date_part('hour', TIMESTAMP '2017-01-01 10:20:30') AS "hour",
+	date_part('minute', TIMESTAMP '2017-01-01 10:20:30') AS "minute",
+	date_part('second', TIMESTAMP '2017-01-01 10:20:30') AS "second"
+;
+
+SELECT movie_name,release_date,
+	date_part('week',release_date) AS "release week",
+	date_part('month',release_date) as "release months"
+FROM movies;
+
+-- date_trunc function
+SELECT DATE_TRUNC('hour', TIMESTAMP '2020-10-01 05:15:45');
+SELECT
+	DATE_TRUNC('hour', TIMESTAMP '2020-10-01 05:15:45') as "hour",
+	DATE_TRUNC('minute', TIMESTAMP '2020-10-01 05:15:45') as "minute",
+	DATE_TRUNC('second', TIMESTAMP '2020-10-01 05:15:45') as "second";
+SELECT date_trunc('month',release_date) as "release_month",
+	COUNT (movie_id)
+FROM movies GROUP BY release_month ORDER BY 2 DESC;
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
