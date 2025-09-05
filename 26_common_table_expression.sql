@@ -104,19 +104,17 @@ SELECT * FROM cte_delete_articles;
 -- can be used to work with hierarchical data
 
 -- Creating a time series with recursive CTEs
-WITH RECURSIVE series () AS
+WITH RECURSIVE series (list_num) AS
 (
 	-- non recursive statement
 		SELECT 10
 	UNION ALL
 		SELECT list_num + 5 FROM series
 		WHERE list_num + 5 <= 50
-		
-
 	-- recursive statemnt
 	
 )
-SELECT
+SELECT * from series;
 
 
 
